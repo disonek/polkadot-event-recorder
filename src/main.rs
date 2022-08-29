@@ -1,14 +1,9 @@
 // Made on basis of subxt/examples/examples/subscribe_all_events.rs
-#![feature(
-    plugin,
-    decl_macro,
-    proc_macro_hygiene
-)]
+#![feature(plugin, decl_macro, proc_macro_hygiene)]
 #![allow(proc_macro_derive_resolution_fallback, unused_attributes)]
 
 #[macro_use]
 extern crate diesel;
-
 extern crate dotenv;
 extern crate r2d2;
 extern crate r2d2_diesel;
@@ -23,16 +18,21 @@ extern crate serde_json;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
+use futures::StreamExt;
 use models::Event;
 use models::NewEvent;
 use routes::*;
 use std::env;
+use subxt::{OnlineClient, PolkadotConfig};
 
 mod database;
 mod models;
 mod routes;
 mod schema;
 mod static_files;
+
+#[subxt::subxt(runtime_metadata_path = "artifacts/polkadot_metadata.scale")]
+pub mod polkadot {}
 
 fn rocket() -> rocket::Rocket {
     dotenv().ok();
@@ -45,13 +45,6 @@ fn rocket() -> rocket::Rocket {
         .mount("/api/v1/", routes![index, new, show, delete, update])
         .mount("/", routes![static_files::all, static_files::index])
 }
-
-// use database::database;
-use futures::StreamExt;
-use subxt::{OnlineClient, PolkadotConfig};
-
-#[subxt::subxt(runtime_metadata_path = "artifacts/polkadot_metadata.scale")]
-pub mod polkadot {}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -71,7 +64,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let events = events?;
         let block_hash = events.block_hash();
 
-        // We can dynamically decode events:
         println!("  Dynamic event details: {block_hash:?}");
         for event in events.iter() {
             let event = event?;
@@ -80,8 +72,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let variant = event.variant_name();
 
             let new_event = NewEvent {
-                description: String::from(pallet),
-                additional_info: String::from(variant),
+                description: String::from(format!("{index}::{pallet}::{variant}")),
+                additional_info: String::from("additional_info"),
             };
             Event::insert(new_event, &conn);
             println!("    {index}::{pallet}::{variant} ");

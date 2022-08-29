@@ -58,12 +58,3 @@ pub fn delete(id: i32, conn: DbConn) -> Json<Value> {
         "result": null,
     }))
 }
-
-//#[catch(404)]
-//fn not_found() -> Json<Value> {
-//    Json(json!({
-//        "status": "error",
-//        "reason": "Resource was not found"
-//    }))
-//}
-//needs to be reworked for current version of rocket.
