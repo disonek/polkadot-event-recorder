@@ -9,25 +9,25 @@ Workaroud to lack of polkadot_metadata.scale -> I just copied it form subxt(Im a
 
 I did try to setup docker-compose but for some reason its not working  
 
-On ubuntu(I used WSL2) these should commands should be enought (unfortunatelly I did not have time to check it on fresh ubuntu instance)  
->sudo apt update 
->sudo apt install postgresql postgresql-contrib libpq-dev 
->sudo /etc/init.d/postgresql start 
->cargo build && cargo run 
+On ubuntu(I used WSL2) these should commands should be enought (unfortunatelly I did not have time to check it on fresh ubuntu instance)  <br />
+>sudo apt update <br />
+>sudo apt install postgresql postgresql-contrib libpq-dev <br />
+>sudo /etc/init.d/postgresql start <br />
+>cargo build && cargo run <br />
 
-Full instruction: 
->sudo apt install postgresql postgresql-contrib libpq-dev 
->sudo /etc/init.d/postgresql start 
->cargo install diesel_cli --no-default-features --features postgres 
->echo DATABASE_URL=postgres://username:password@localhost/polkadot_events > .env 
->diesel setup 
+Full instruction: <br />
+>sudo apt install postgresql postgresql-contrib libpq-dev <br />
+>sudo /etc/init.d/postgresql start <br />
+>cargo install diesel_cli --no-default-features --features postgres <br />
+>echo DATABASE_URL=postgres://username:password@localhost/polkadot_events > .env <br />
+>diesel setup <br />
 
-to silent: Creating database: polkadot_events FATAL: password authentication failed for user "postgres" FATAL: password authentication failed for user "postgres" 
->sudo -i -u postgres psql ALTER USER postgres PASSWORD 'postgres'; \q exit 
+to silent: Creating database: polkadot_events FATAL: password authentication failed for user "postgres" FATAL: password authentication failed for user "postgres" <br />
+>sudo -i -u postgres psql ALTER USER postgres PASSWORD 'postgres'; \q exit <br />
 
->diesel migration generate create_polkadot_events  
->diesel migration run  
->diesel print-schema > src/schema.rs 
+>diesel migration generate create_polkadot_events <br /> 
+>diesel migration run  <br />
+>diesel print-schema > src/schema.rs <br />
 
 
 Running app logs should look more or less like this: 
