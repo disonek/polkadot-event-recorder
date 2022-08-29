@@ -1,8 +1,16 @@
 version: "3.2"
 
+# services:
+# dev:
+#   image: disonek/db_subxt:latest
+#   container_name: db_subxt_container
+#   working_dir: /var/dev
+#   ports:
+#     - "9944:9944"
+#   command: bash -c "cargo build && cargo run"
 services:
   dev:
-    container_name: task
+    container_name: node-template
     image: paritytech/ci-linux:production
     working_dir: /var/www/node-template
     ports:
@@ -14,4 +22,17 @@ services:
       - type: bind
         source: ./.local
         target: /root/.local
-    command: bash -c "cargo build && cargo run"
+    command: bash -c "apt-get -y update && apt-get -y install libpq-dev && cargo +nightly build && cargo +nightly run"
+
+  db:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: polkadot_events
+    restart: unless-stopped
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"

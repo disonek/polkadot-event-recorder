@@ -1,10 +1,7 @@
 // Made on basis of subxt/examples/examples/subscribe_all_events.rs
 #![feature(
     plugin,
-    // custom_derive,
-    // const_fn,
     decl_macro,
-    // custom_attribute,
     proc_macro_hygiene
 )]
 #![allow(proc_macro_derive_resolution_fallback, unused_attributes)]
@@ -26,6 +23,8 @@ extern crate serde_json;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
+use models::Event;
+use models::NewEvent;
 use routes::*;
 use std::env;
 
@@ -53,21 +52,21 @@ use subxt::{OnlineClient, PolkadotConfig};
 
 #[subxt::subxt(runtime_metadata_path = "artifacts/polkadot_metadata.scale")]
 pub mod polkadot {}
-/// Subscribe to all events, and then manually look through them and
-/// pluck out the events that we care about.
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    rocket().launch();
+    tokio::task::spawn(async move {
+        rocket().launch();
+    });
     tracing_subscriber::fmt::init();
 
-    // Create a client to use:
     let api = OnlineClient::<PolkadotConfig>::from_url("wss://rpc.polkadot.io:443").await?;
 
-    // Subscribe to any events that occur:
     let mut event_sub = api.events().subscribe().await?;
 
-    // Our subscription will see the events emitted as a result of this:
+    let database_url = env::var("DATABASE_URL").expect("set DATABASE_URL");
+    let conn = PgConnection::establish(&database_url).unwrap();
+
     while let Some(events) = event_sub.next().await {
         let events = events?;
         let block_hash = events.block_hash();
@@ -79,6 +78,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let index = event.index();
             let pallet = event.pallet_name();
             let variant = event.variant_name();
+
+            let new_event = NewEvent {
+                description: String::from(pallet),
+                additional_info: String::from(variant),
+            };
+            Event::insert(new_event, &conn);
             println!("    {index}::{pallet}::{variant} ");
         }
     }

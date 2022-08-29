@@ -1,43 +1,31 @@
 # bright_inventions_task
 
-To build and run app command should be enought 
-```bash
-cargo build && cargo run  
-```
+The main funciton is written on basis of:
+https://github.com/paritytech/subxt/blob/master/examples/examples/subscribe_all_events.rs (connect to polkadot chain)
+and 
+https://github.com/tensor-programming/rust_api_part_3 (database chandling and api)
 
-Wokraroud to lack of polkadot_metadata.scale -> I just copied it form subxt(Im aware its not a proper way)
+Workaroud to lack of polkadot_metadata.scale -> I just copied it form subxt(Im aware its not a proper way)
 
-The main funciton is written on basis of subxt/examples/examples/subscribe_all_events.rs
+I did try to setup docker-compose but for some reason its not working 
 
-As Im docker noob I did copy form docker-compose.yml
-https://github.com/substrate-developer-hub/substrate-node-template/blob/main/docker-compose.yml
-
-
-
-
-sudo apt install postgresql postgresql-contrib
-sudo apt install libpq-dev
-
-sudo pg_ctlcluster 12 main start
-
-cargo install diesel_cli --no-default-features --features postgres
-
-echo DATABASE_URL=postgres://username:password@localhost/polkadot_events > .env
-
-diesel setup
-
-to silent:
-Creating database: polkadot_events
-FATAL:  password authentication failed for user "postgres"
-FATAL:  password authentication failed for user "postgres"
-
-sudo -i -u postgres
-psql
-ALTER USER postgres PASSWORD 'new_password';
-\q
-exit
+on ubunu these should be enought(unfortunatelly I did not have time to check it on fres ubuntu instance) 
+sudo apt update
+sudo apt install postgresql postgresql-contrib libpq-dev
+/etc/init.d/postgresql start
+cargo build && cargo run
 
 
-diesel migration generate create_polkadot_events
-diesel migration run
-diesel print-schema > src/schema.rs
+Full instruction:
+>sudo apt install postgresql postgresql-contrib libpq-dev
+>/etc/init.d/postgresql start
+>cargo install diesel_cli --no-default-features --features postgres
+>echo DATABASE_URL=postgres://username:password@localhost/polkadot_events > .env
+>diesel setup
+
+to silent: Creating database: polkadot_events FATAL: password authentication failed for user "postgres" FATAL: password authentication failed for user "postgres"
+>sudo -i -u postgres psql ALTER USER postgres PASSWORD 'new_password'; \q exit
+
+>diesel migration generate create_polkadot_events 
+>diesel migration run 
+>diesel print-schema > src/schema.rs
