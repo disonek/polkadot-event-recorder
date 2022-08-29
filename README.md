@@ -1,36 +1,36 @@
 # bright_inventions_task
 
-The main funciton is written on basis of:
-https://github.com/paritytech/subxt/blob/master/examples/examples/subscribe_all_events.rs (connect to polkadot chain)
-and 
-https://github.com/tensor-programming/rust_api_part_3 (database chandling and api)
+The main funciton is written on basis of: 
+https://github.com/paritytech/subxt/blob/master/examples/examples/subscribe_all_events.rs (connect to polkadot chain) 
+and  
+https://github.com/tensor-programming/rust_api_part_3 (database chandling and api) 
 
-Workaroud to lack of polkadot_metadata.scale -> I just copied it form subxt(Im aware its not a proper way)
+Workaroud to lack of polkadot_metadata.scale -> I just copied it form subxt(Im aware its not a proper way) 
 
-I did try to setup docker-compose but for some reason its not working 
+I did try to setup docker-compose but for some reason its not working  
 
-On ubuntu(I used WSL2) these should commands should be enought (unfortunatelly I did not have time to check it on fresh ubuntu instance) 
->sudo apt update
->sudo apt install postgresql postgresql-contrib libpq-dev
->sudo /etc/init.d/postgresql start
->cargo build && cargo run
+On ubuntu(I used WSL2) these should commands should be enought (unfortunatelly I did not have time to check it on fresh ubuntu instance)  
+>sudo apt update 
+>sudo apt install postgresql postgresql-contrib libpq-dev 
+>sudo /etc/init.d/postgresql start 
+>cargo build && cargo run 
 
-Full instruction:
->sudo apt install postgresql postgresql-contrib libpq-dev
->sudo /etc/init.d/postgresql start
->cargo install diesel_cli --no-default-features --features postgres
->echo DATABASE_URL=postgres://username:password@localhost/polkadot_events > .env
->diesel setup
+Full instruction: 
+>sudo apt install postgresql postgresql-contrib libpq-dev 
+>sudo /etc/init.d/postgresql start 
+>cargo install diesel_cli --no-default-features --features postgres 
+>echo DATABASE_URL=postgres://username:password@localhost/polkadot_events > .env 
+>diesel setup 
 
-to silent: Creating database: polkadot_events FATAL: password authentication failed for user "postgres" FATAL: password authentication failed for user "postgres"
->sudo -i -u postgres psql ALTER USER postgres PASSWORD 'postgres'; \q exit
+to silent: Creating database: polkadot_events FATAL: password authentication failed for user "postgres" FATAL: password authentication failed for user "postgres" 
+>sudo -i -u postgres psql ALTER USER postgres PASSWORD 'postgres'; \q exit 
 
->diesel migration generate create_polkadot_events 
->diesel migration run 
->diesel print-schema > src/schema.rs
+>diesel migration generate create_polkadot_events  
+>diesel migration run  
+>diesel print-schema > src/schema.rs 
 
 
-Running app logs should look more or less like this:
+Running app logs should look more or less like this: 
 ```log
 Running `target/debug/bright_inventions_task`
 2022-08-29T03:45:59.762804Z  INFO launch: 🔧 Configured for development.    
@@ -73,5 +73,5 @@ Running `target/debug/bright_inventions_task`
 
 ```
 
-I did test it using postman with http://localhost:8000/api/v1/pd_events adres
-Unfortunatelly I did not have time to write unit-tests, integration-tests  and 10 million events test
+I did test it using postman with http://localhost:8000/api/v1/pd_events adres 
+Unfortunatelly I did not have time to write unit-tests, integration-tests  and 10 million events test 
