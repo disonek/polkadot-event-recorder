@@ -1,4 +1,4 @@
-# bright_inventions_task
+
 
 The main funciton is written on basis of: 
 https://github.com/paritytech/subxt/blob/master/examples/examples/subscribe_all_events.rs (connect to polkadot chain) 
